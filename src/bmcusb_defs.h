@@ -31,4 +31,9 @@ typedef struct {
 #define BMCUSB_VENDOR ((u_int16_t) 0x03f0)
 #define BMCUSB_MULTIDRIVER ((u_int16_t) 0x0317)
 
+#define BOOL bool
+typedef char BYTE;
+typedef bool BOOL; 
+typedef int16_t WORD;
+
 #endif
