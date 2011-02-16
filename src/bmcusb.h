@@ -31,7 +31,6 @@
 typedef long 		bmc_status_t;
 typedef long 		bmc_controlID_t;
 typedef uint16_t 	bmc_actuatorData_t;
-uint8_t 
 
 ////////////////////////////////////////////////////////////////////////////
 // Function prototypes
@@ -53,5 +52,10 @@ int bmcusb_flush	(int nDevId, bmc_status_t* p_nStatus);
 
 // bmcusb_StreamFrameDataVar(LONG nDevId, VARIANT FAR* pFrameDataVara, LONG nBuffSize, LONG* p_nStatus);
 // bmcusb_StepFrameDataVar(LONG nDevId, VARIANT FAR* pFrameDataVar, LONG nBuffSize, LONG* p_nStatus);
+
+// Utility functions:
+void clearBuffer(bmc_actuatorData_t buf[], int N) ;
+bmc_actuatorData_t *mapActs(bmc_actuatorData_t *FROM, bmc_actuatorData_t *TO, const int actMap[]);
+
 
 #endif

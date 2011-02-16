@@ -6,20 +6,6 @@
 
 #define MAPPING mapMultiDM01
 
-void clearBuffer(bmc_actuatorData_t buf[], int N) {
-  int n;
-  for(n=0;n<N;n++) {
-    buf[n] = 0;
-  }
-}
-
-bmc_actuatorData_t *mapActs(bmc_actuatorData_t *FROM, bmc_actuatorData_t *TO, const int actMap[]) {
-  int n;
-  for(n=0;n<NUM_ACTUATORS;n++)
-    TO[n] = FROM[actMap[n]];
-  return(TO);
-}
-
 int main(int argc, char **argv)
 {
   int Nbmc;

@@ -12,12 +12,23 @@
 #endif
 
 typedef struct {
-  char *devnode; // The /dev/bus/usb path
+  char devpath[256]; // The /dev/bus/usb path
   struct usb_bus *bus;
   struct usb_device *dev;
   usb_dev_handle *udev;
 } BMCUSB_DEVICE;
 
 #define MAX_BMCUSB_DEVICES 2
+
+// #define BMCUSB_VENDOR ((u_int16_t) 0x1781)
+// #define BMCUSB_MULTIDRIVER ((u_int16_t) 0x0ED8)
+
+// testing only!!! (optical mouse)
+// #define BMCUSB_VENDOR ((u_int16_t) 0x046d)
+// #define BMCUSB_MULTIDRIVER ((u_int16_t) 0xc03e)
+
+// 03f0:0317 printer
+#define BMCUSB_VENDOR ((u_int16_t) 0x03f0)
+#define BMCUSB_MULTIDRIVER ((u_int16_t) 0x0317)
 
 #endif
