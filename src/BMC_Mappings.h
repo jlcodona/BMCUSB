@@ -2,7 +2,8 @@
 #define BMC_USB_MULTIDRIVER ((u_int16_t) 0x0ED8)
 
 #ifndef NUM_ACTUATORS
-#define NUM_ACTUATORS USB_NUM_ACTUATORS_MULTI
+#define NUM_ACTUATORS	USB_NUM_ACTUATORS_MULTI
+#define USB_DEVNAME	"Multi"
 #endif
 
 int i160TestMap[NUM_ACTUATORS] = // example actuator map

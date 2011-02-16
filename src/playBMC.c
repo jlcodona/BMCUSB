@@ -2,6 +2,7 @@
 #include <usb.h>
 //#include "stdafx.h"
 #include "CIUsbLib.h"
+#include "CIUsbShared.h"
 #include "BMC_Mappings.h"
 
 #define TIMEOUT   1000
@@ -32,20 +33,15 @@ int vcmd(usb_dev_handle *udev, int request, int value, int index, int size, char
 {
   int err;
   
-  // printf("\nSending a mysterious vendor command: 0x%04X\n", request);
-  printf("Mysterious UNDOCUMENTED vendor command: %02X %04X %04X %5d: \n", request,value,index,size);
+  printf("Vendor command: %02X %04X %04X %5d: \n", request,value,index,size);
   printbytes(bytes,size);	
   
   err = usb_control_msg(udev,USB_TYPE_VENDOR,request,value,index,bytes,size,TIMEOUT)<0;
   if(err) {
-    printf("  (err=%d) >>> FAILED TO COMPLETE MYSTERIOUS VENDOR COMMAND!\n",err);
+    printf("  (err=%d) >>> FAILED TO COMPLETE VENDOR COMMAND!\n",err);
     return(err);
   } 
   
-  // printf("Data returned >>> \n"); 
-  //printf("VENDOR_RECV: %04X %04X %04X %04X: ", request,value,index,size);
-  //printbytes(bytes,size);	
-  //printf("\n");
   return(0);
 }
 
@@ -83,13 +79,15 @@ int main(int argc, char **argv)
   usb_find_busses();
   usb_find_devices();
   
-  printf("Scanning USB busses...\n");
+  printf("Scanning for DM Controllers...\n");
   
   for (bus = usb_busses; bus; bus = bus->next) {
     for (dev = bus->devices; dev; dev = dev->next) {
       int ret;
-      //char data[256];
       usb_dev_handle *udev;
+      
+      printf("/dev/bus/usb/%s/%s: Vendor=0x%04X Product=0x%04X\n", bus->dirname, dev->filename,
+	       dev->descriptor.idVendor, dev->descriptor.idProduct);
       
       if (dev->descriptor.idVendor == BMC_USB_VENDOR) {
 	printf("Located a Boston MicroMachines device on USB %s.%s\n",bus->dirname, dev->filename);
@@ -137,23 +135,23 @@ int main(int argc, char **argv)
 	}
 	printf("I have CLAIMED the interface.\n");
 	
-	// bmReqType	Recipient	Type	Dir	bReq	wValue	wIndex	wLength	[bmReqType]
-	// 0xC0		0		10	1	0xF0	0	0	0x16	USB_TYPE_VENDOR dev->host
+	// bmReqType	Recipient	Type	Dir	bReq	wValue	wIndex	wLength	[bReq]
+	// 0xC0		0		10	1	0xF0	0	0	0x16	eCIUsbCmndGetFirmwareVer
 	// 										
-	// 0x40		0		10	0	0xF5	0	0x0002	0	USB_TYPE_VENDOR host->dev
-	// 0x40		0		10	0	0xF5	0	0x0082	0	USB_TYPE_VENDOR host->dev
-	// 0x40		0		10	0	0xF5	0	0x0088	0	USB_TYPE_VENDOR host->dev
+	// 0x40		0		10	0	0xF5	0	0x0002	0	eCIUsbCmndSetControlBits
+	// 0x40		0		10	0	0xF5	0	0x0082	0	eCIUsbCmndSetControlBits
+	// 0x40		0		10	0	0xF5	0	0x0088	0	eCIUsbCmndSetControlBits
 	// 										
 	// Data block transfer...							
 	// 										
-	// 0x40		0		10	0	0xF5	0	0x0008	0	USB_TYPE_VENDOR host->dev
+	// 0x40		0		10	0	0xF5	0	0x0008	0	eCIUsbCmndSetControlBits
 	
 	//int vcmd(usb_dev_handle *udev, int request, int value, int index, int size, char *bytes);
 	
 	// This appears to just be an ID read command.  It can be done using normal commands above.
 
 	string[0] = 0;
-	err = vcmd(udev, 0xF0, 0, 0, 0x16, string); // Returns: "DM Driver USB Interface"
+	err = vcmd(udev, eCIUsbCmndGetFirmwareVer, 0, 0, 0x16, string); // Returns: "DM Driver USB Interface"
 	//err = vcmd(udev, 0xC0, 0, 0, 0x16, string); // Returns: "DM Driver USB Interface"
 	if(err) {
 	  printf("First vendor read command failed.  err=%d\n",err);
@@ -162,19 +160,19 @@ int main(int argc, char **argv)
 	printf("vendor command returned <%s>\n",string);
 	  
 	  
-	err = vcmd(udev, 0xF5, 0, 0x0002, 0, string); 
+	err = vcmd(udev, eCIUsbCmndSetControlBits, 0, 0x0002, 0, string); 
 	if(err) {
 	  printf("Mysterious undoc command 0x0002 failed.  err=%d\n",err);
 	  continue;
 	} 
 	  
-	err = vcmd(udev, 0xF5, 0, 0x0082, 0, string); 
+	err = vcmd(udev, eCIUsbCmndSetControlBits, 0, 0x0082, 0, string); 
 	if(err) {
 	  printf("Mysterious undoc command 0x0082 failed.  err=%d\n",err);
 	  continue;
 	} 
 	  
-	  err = vcmd(udev, 0xF5, 0, 0x0088, 0, string); 
+	  err = vcmd(udev, eCIUsbCmndSetControlBits, 0, 0x0088, 0, string); 
 	  if(err) {
 	    printf("Mysterious undoc command 0x0088 failed.  err=%d\n",err);
 	    continue;
@@ -234,7 +232,7 @@ int main(int argc, char **argv)
 	  } // end of DM actuator test block.
 	  
 	  printf("Shutdown command sequence(?)\n");
-	err = vcmd(udev, 0xF5, 0, 0x0008, 0, string); 
+	err = vcmd(udev, eCIUsbCmndSetControlBits, 0, 0x0008, 0, string); 
 	if(err) {
 	  printf("Mysterious undoc command 0x0008 failed.  err=%d\n",err);
 	  continue;
