@@ -36,4 +36,7 @@ typedef int16_t WORD;
 typedef char BYTE;
 typedef int bool; 
 
+// #define 0 false
+// #define 1 true
+
 #endif

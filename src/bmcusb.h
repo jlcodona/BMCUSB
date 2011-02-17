@@ -55,6 +55,7 @@ int bmcusb_flush	(int nDevId, bmc_status_t* p_nStatus);
 
 // Utility functions:
 void clearBuffer(bmc_actuatorData_t buf[], int N) ;
+int bmcusb_zeroDM(int nDevId);
 bmc_actuatorData_t *mapActs(bmc_actuatorData_t *FROM, bmc_actuatorData_t *TO, const int actMap[]);
 
 

@@ -23,6 +23,7 @@
 #include "bmcusb.h"
 #include "bmcusb_defs.h"
 #include "CIUsbLib.h"
+#include "CIUsbShared.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -89,7 +90,7 @@ bool bmcusb_VendorRequest(int nDevId,
 						BYTE *pbyBuffer, 
 						long lLen){
   // NOTE: Find out what to do with direction bToTarget....
-  return(usb_control_msg(BMCDEV[Nbmc].udev,USB_TYPE_VENDOR,byReqCode,wValue,wIndex,pbyBuffer,iLen,TIMEOUT));
+  return(usb_control_msg(BMCDEV[Nbmc].udev,USB_TYPE_VENDOR,byReqCode,wValue,wIndex,pbyBuffer,lLen,TIMEOUT));
   
 }
 
@@ -110,29 +111,28 @@ int bmcusb_setControl(int nDevId, bmc_controlID_t nCntlId, bmc_status_t* p_nStat
 // 		break;
 
 	case CIUsb_CONTROL_ASSERT_FRESET:
-// 	  usb_control_msg(udev,USB_TYPE_VENDOR,request,value,index,bytes,size,TIMEOUT)
-		if(!bmcusb_VendorRequest(nDevId, eCIUsbCmndSetControlBits, true /*ToTarget*/, 0 /*value*/, 0x0082 /*index*/, NULL, 0))
+		if(!bmcusb_VendorRequest(nDevId, eCIUsbCmndSetControlBits, 1 /*ToTarget*/, 0 /*value*/, 0x0082 /*index*/, NULL, 0))
 			*p_nStatus = H_DEVICE_CMD_ERR;
 		else
 			*p_nStatus = H_DEVICE_STATUS_OK;
 		break;
 
 	case CIUsb_CONTROL_DEASSERT_FRESET:
-		if(!m_UsbComm.VendorRequest(nDevId, eCIUsbCmndSetControlBits, true /*ToTarget*/, 0 /*value*/, 0x0002 /*index*/, NULL, 0))
+		if(!bmcusb_VendorRequest(nDevId, eCIUsbCmndSetControlBits, 1 /*ToTarget*/, 0 /*value*/, 0x0002 /*index*/, NULL, 0))
 			*p_nStatus = H_DEVICE_CMD_ERR;
 		else
 			*p_nStatus = H_DEVICE_STATUS_OK;
 		break;
 
 // 	case CIUsb_CONTROL_ASSERT_FRAME_SYNC:
-// 		if(!m_UsbComm.VendorRequest(nDevId, eCIUsbCmndSetControlBits, true /*ToTarget*/, 0 /*value*/, 0x0084 /*index*/, NULL, 0))
+// 		if(!m_UsbComm.VendorRequest(nDevId, eCIUsbCmndSetControlBits, 1 /*ToTarget*/, 0 /*value*/, 0x0084 /*index*/, NULL, 0))
 // 			*p_nStatus = H_DEVICE_CMD_ERR;
 // 		else
 // 			*p_nStatus = H_DEVICE_STATUS_OK;
 // 		break;
 
 // 	case CIUsb_CONTROL_DEASSERT_FRAME_SYNC:
-// 		if(!m_UsbComm.VendorRequest(nDevId, eCIUsbCmndSetControlBits, true /*ToTarget*/, 0 /*value*/, 0x0004 /*index*/, NULL, 0))
+// 		if(!m_UsbComm.VendorRequest(nDevId, eCIUsbCmndSetControlBits, 1 /*ToTarget*/, 0 /*value*/, 0x0004 /*index*/, NULL, 0))
 // 			*p_nStatus = H_DEVICE_CMD_ERR;
 // 		else
 // 			*p_nStatus = H_DEVICE_STATUS_OK;
@@ -142,7 +142,7 @@ int bmcusb_setControl(int nDevId, bmc_controlID_t nCntlId, bmc_status_t* p_nStat
 // 		if (m_dwUsbBytesPerFrame == USB_BYTES_PER_FRAME_MINI)
 // 		{
 // 			// enabling HV requires de-assert of LV_SHDN followed by a delay in MINI mode
-// 			if(!m_UsbComm.VendorRequest(nDevId, eCIUsbCmndSetControlBits, true /*ToTarget*/, 0 /*value*/, 0x0010 /*index*/, NULL, 0))
+// 			if(!m_UsbComm.VendorRequest(nDevId, eCIUsbCmndSetControlBits, 1 /*ToTarget*/, 0 /*value*/, 0x0010 /*index*/, NULL, 0))
 // 				*p_nStatus = H_DEVICE_CMD_ERR;
 // 			else
 // 				*p_nStatus = H_DEVICE_STATUS_OK;
@@ -191,7 +191,7 @@ int bmcusb_setControl(int nDevId, bmc_controlID_t nCntlId, bmc_status_t* p_nStat
 // 			*p_nStatus = H_DEVICE_STATUS_OK;
 // 		break;
 	}
-	return S_OK;
+	return H_DEVICE_STATUS_OK;
 }
 
 
