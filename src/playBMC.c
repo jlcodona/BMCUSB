@@ -136,15 +136,15 @@ int main(int argc, char **argv)
 	printf("I have CLAIMED the interface.\n");
 	
 	// bmReqType	Recipient	Type	Dir	bReq	wValue	wIndex	wLength	[bReq]
-	// 0xC0		0		10	1	0xF0	0	0	0x16	eCIUsbCmndGetFirmwareVer
-	// 										
-	// 0x40		0		10	0	0xF5	0	0x0002	0	eCIUsbCmndSetControlBits
-	// 0x40		0		10	0	0xF5	0	0x0082	0	eCIUsbCmndSetControlBits
-	// 0x40		0		10	0	0xF5	0	0x0088	0	eCIUsbCmndSetControlBits
-	// 										
-	// Data block transfer...							
-	// 										
-	// 0x40		0		10	0	0xF5	0	0x0008	0	eCIUsbCmndSetControlBits
+	// 0xC0		0		10	1	0xF0			0		0		0x16		eCIUsbCmndGetFirmwareVer	
+	// 																						
+	// 0x40		0		10	0	0xF5			0		0x0002	0		eCIUsbCmndSetControlBits	
+	// 0x40		0		10	0	0xF5			0		0x0082	0		eCIUsbCmndSetControlBits	
+	// 0x40		0		10	0	0xF5			0		0x0088	0		eCIUsbCmndSetControlBits	
+	// 																						
+	// Data block transfer...																		
+	// 																						
+	// 0x40		0		10	0	0xF5			0		0x0008	0		eCIUsbCmndSetControlBits	
 	
 	//int vcmd(usb_dev_handle *udev, int request, int value, int index, int size, char *bytes);
 	
@@ -158,7 +158,6 @@ int main(int argc, char **argv)
 	  continue;
 	} 
 	printf("vendor command returned <%s>\n",string);
-	  
 	  
 	err = vcmd(udev, eCIUsbCmndSetControlBits, 0, 0x0002, 0, string); 
 	if(err) {

@@ -81,9 +81,18 @@ int bmcusb_release(int nDevId)
 
 // int bmcusb_setControl(int nDevId, bmc_controlID_t nCntlId, bmc_status_t* p_nStatus);
 // UsbCom.cpp:bool CUsbCom::VendorRequest(LONG nDevId, BYTE byReqCode, bool bToTarget, WORD wValue, WORD wIndex, BYTE *pbyBuffer, long lLen)
-bool bmcusb_VendorRequest(int nDevId, BYTE byReqCode, bool bToTarget, WORD wValue, WORD wIndex, BYTE *pbyBuffer, long lLen)
+bool bmcusb_VendorRequest(int nDevId, 
+					        BYTE byReqCode, 
+						bool bToTarget, 
+						WORD wValue, 
+						WORD wIndex, 
+						BYTE *pbyBuffer, 
+						long lLen){
+  // NOTE: Find out what to do with direction bToTarget....
+  return(usb_control_msg(BMCDEV[Nbmc].udev,USB_TYPE_VENDOR,byReqCode,wValue,wIndex,pbyBuffer,iLen,TIMEOUT));
+  
+}
 
-// usb_control_msg(udev,USB_TYPE_VENDOR,request,value,index,bytes,size,TIMEOUT)
 int bmcusb_setControl(int nDevId, bmc_controlID_t nCntlId, bmc_status_t* p_nStatus)
 {
 // 	CMyAutoLock AutoLock(m_csAccess);
@@ -102,7 +111,7 @@ int bmcusb_setControl(int nDevId, bmc_controlID_t nCntlId, bmc_status_t* p_nStat
 
 	case CIUsb_CONTROL_ASSERT_FRESET:
 // 	  usb_control_msg(udev,USB_TYPE_VENDOR,request,value,index,bytes,size,TIMEOUT)
-		if(!m_UsbComm.VendorRequest(nDevId, eCIUsbCmndSetControlBits, true /*ToTarget*/, 0 /*value*/, 0x0082 /*index*/, NULL, 0))
+		if(!bmcusb_VendorRequest(nDevId, eCIUsbCmndSetControlBits, true /*ToTarget*/, 0 /*value*/, 0x0082 /*index*/, NULL, 0))
 			*p_nStatus = H_DEVICE_CMD_ERR;
 		else
 			*p_nStatus = H_DEVICE_STATUS_OK;
