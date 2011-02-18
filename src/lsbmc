@@ -1,1 +1,2 @@
-lsusb -d 1781:0ED8
+lsusb -d 1781:0ED8 | sed -e 's/Multiple Vendors/Boston Micromachines Multi-Driver/'
+
