@@ -135,16 +135,16 @@ int main(int argc, char **argv)
 	}
 	printf("I have CLAIMED the interface.\n");
 	
-	// bmReqType	Recipient	Type	Dir	bReq	wValue	wIndex	wLength	[bReq]
-	// 0xC0		0		10	1	0xF0			0		0		0x16		eCIUsbCmndGetFirmwareVer	
-	// 																						
-	// 0x40		0		10	0	0xF5			0		0x0002	0		eCIUsbCmndSetControlBits	
-	// 0x40		0		10	0	0xF5			0		0x0082	0		eCIUsbCmndSetControlBits	
-	// 0x40		0		10	0	0xF5			0		0x0088	0		eCIUsbCmndSetControlBits	
-	// 																						
-	// Data block transfer...																		
-	// 																						
-	// 0x40		0		10	0	0xF5			0		0x0008	0		eCIUsbCmndSetControlBits	
+	// bmReqType	Recip	Type	Dir	bReq	wValue	wIndex	wLength	[bReq]
+	// 0xC0		0	10	1	0xF0	0	0	0x16	eCIUsbCmndGetFirmwareVer
+	// 												
+	// 0x40		0	10	0	0xF5	0	0x0002	0	eCIUsbCmndSetControlBits
+	// 0x40		0	10	0	0xF5	0	0x0082	0	eCIUsbCmndSetControlBits
+	// 0x40		0	10	0	0xF5	0	0x0088	0	eCIUsbCmndSetControlBits
+	// 												
+	// Data block transfer...									
+	// 												
+	// 0x40		0	10	0	0xF5	0	0x0008	0	eCIUsbCmndSetControlBits
 	
 	//int vcmd(usb_dev_handle *udev, int request, int value, int index, int size, char *bytes);
 	
@@ -159,19 +159,19 @@ int main(int argc, char **argv)
 	} 
 	printf("vendor command returned <%s>\n",string);
 	  
-	err = vcmd(udev, eCIUsbCmndSetControlBits, 0, 0x0002, 0, string); 
+	err = vcmd(udev, eCIUsbCmndSetControlBits, 0, 0x0002, 0, string); // de-assert Reset
 	if(err) {
 	  printf("Mysterious undoc command 0x0002 failed.  err=%d\n",err);
 	  continue;
 	} 
 	  
-	err = vcmd(udev, eCIUsbCmndSetControlBits, 0, 0x0082, 0, string); 
+	err = vcmd(udev, eCIUsbCmndSetControlBits, 0, 0x0082, 0, string); // assert Reset
 	if(err) {
 	  printf("Mysterious undoc command 0x0082 failed.  err=%d\n",err);
 	  continue;
 	} 
 	  
-	  err = vcmd(udev, eCIUsbCmndSetControlBits, 0, 0x0088, 0, string); 
+	  err = vcmd(udev, eCIUsbCmndSetControlBits, 0, 0x0088, 0, string); // turn ON HV.
 	  if(err) {
 	    printf("Mysterious undoc command 0x0088 failed.  err=%d\n",err);
 	    continue;
@@ -231,7 +231,7 @@ int main(int argc, char **argv)
 	  } // end of DM actuator test block.
 	  
 	  printf("Shutdown command sequence(?)\n");
-	err = vcmd(udev, eCIUsbCmndSetControlBits, 0, 0x0008, 0, string); 
+	err = vcmd(udev, eCIUsbCmndSetControlBits, 0, 0x0008, 0, string);  // 
 	if(err) {
 	  printf("Mysterious undoc command 0x0008 failed.  err=%d\n",err);
 	  continue;

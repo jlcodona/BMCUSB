@@ -11,14 +11,14 @@
 // Vendor Requests to USB device.
 enum
 {
-	eCIUsbCmndGetFirmwareVer		= 0xF0,
-	eCIUsbCmndSetGetRam				= 0xF1,
-	eCIUsbCmndSetGetCodeEeprom		= 0xF2,
-	eCIUsbCmndResetAll				= 0xF3,
-	eCIUsbCmndGetStatusBits			= 0xF4, // bit[0]=FrameErr,  bit[1]=RdHvaE, bit[2]=CableOk, bit[9]=ExEepromPresent
-	eCIUsbCmndSetControlBits		= 0xF5, // bit[7]=Set/Reset, bit[1]=Freset, bit[2]=FrameSync, bit[3]=HvEnab
+	eCIUsbCmndGetFirmwareVer	= 0xF0,
+	eCIUsbCmndSetGetRam		= 0xF1,
+	eCIUsbCmndSetGetCodeEeprom	= 0xF2,
+	eCIUsbCmndResetAll		= 0xF3,
+	eCIUsbCmndGetStatusBits		= 0xF4, // bit[0]=FrameErr,  bit[1]=RdHvaE, bit[2]=CableOk, bit[9]=ExEepromPresent
+	eCIUsbCmndSetControlBits	= 0xF5, // bit[7]=Set/Reset, bit[1]=Freset, bit[2]=FrameSync, bit[3]=HvEnab
 	eCIUsbCmndSetGetCodeExEeprom	= 0xF6,
-	eCIUsbCmndSetDac				= 0xF7
+	eCIUsbCmndSetDac		= 0xF7
 };
 
 // {25F4FAFE-F508-43af-A7B5-D045A66F46EE}

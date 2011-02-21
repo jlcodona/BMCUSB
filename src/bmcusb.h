@@ -28,35 +28,51 @@
 
 /* LIBRARY DEFINES */
 
-typedef long 		bmc_status_t;
 typedef long 		bmc_controlID_t;
 typedef uint16_t 	bmc_actuatorData_t;
+
+typedef int16_t WORD;
+typedef char BYTE;
+// typedef int bool; 
+typedef enum { FALSE = 0, TRUE = 1 } bool; 
+// enum bool { FALSE = 0, TRUE = 1 };
+// #define 0 false
+// #define 1 true
+
 
 ////////////////////////////////////////////////////////////////////////////
 // Function prototypes
 ////////////////////////////////////////////////////////////////////////////
 
+void bmcusb_setDebug(bool state);
+
 int bmcusb_probe(); 	// returns number of devices found.
 int bmcusb_claim      	(int nDevId); 		// call before using.
 int bmcusb_release    	(int nDevId); 		// call before quitting.
-int bmcusb_getStatus	(int nDevId, bmc_status_t* p_nStatus); // get device status. 
 
-int bmcusb_setControl	(int nDevId, bmc_controlID_t nCntlId, bmc_status_t* p_nStatus);
+//int bmcusb_getStatus	(int nDevId, bmc_status_t* p_nStatus); // get device status. 
 
-int bmcusb_zero		(int nDevId);
-int bmcusb_setConstant	(int nDevId, bmc_actuatorData_t value);
-int bmcusb_sendFrame	(int nDevId, bmc_actuatorData_t* acts_cmds,  int nBuffSize, bmc_status_t* status_out);
-int bmcusb_streamFrame	(int nDevId, bmc_actuatorData_t* acts_cmds,  int nBuffSize, bmc_status_t* status_out);
-int bmcusb_stepFrame	(int nDevId, bmc_actuatorData_t* acts_cmds,  int nBuffSize, bmc_status_t* status_out);
-int bmcusb_flush	(int nDevId, bmc_status_t* p_nStatus);
+// int bmcusb_setControl	(int nDevId, bmc_controlID_t nCntlId, bmc_status_t* p_nStatus);
 
-// bmcusb_StreamFrameDataVar(LONG nDevId, VARIANT FAR* pFrameDataVara, LONG nBuffSize, LONG* p_nStatus);
-// bmcusb_StepFrameDataVar(LONG nDevId, VARIANT FAR* pFrameDataVar, LONG nBuffSize, LONG* p_nStatus);
+int bmcusb_assertReset  (int nDevId);
+int bmcusb_deassertReset(int nDevId);
+int bmcusb_reset	(int nDevId);
+
+int bmcusb_setHV	(int nDevId, bool ON);
+
+int bmcusb_setFrameSync	(int nDevId, bool ASSERT);
+int bmcusb_setLVShdn	(int nDevId, bool ASSERT);
+int bmcusb_setExtI2C	(int nDevId, bool ASSERT);
+
+int bmcusb_zeroDM	(int nDevId);
+int bmcusb_constantDM	(int nDevId, bmc_actuatorData_t value);
+
+int bmcusb_sendDM	(int nDevId, bmc_actuatorData_t* acts_cmds); // buffer size is tacit.
+
+int bmcusb_VendorRequest(int nDevId, int reqCode, int bToTarget, int wValue, int wIndex, char *buffer, int len);
 
 // Utility functions:
 void clearBuffer(bmc_actuatorData_t buf[], int N) ;
-int bmcusb_zeroDM(int nDevId);
 bmc_actuatorData_t *mapActs(bmc_actuatorData_t *FROM, bmc_actuatorData_t *TO, const int actMap[]);
-
 
 #endif
