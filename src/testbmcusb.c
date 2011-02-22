@@ -1,19 +1,17 @@
 #include <usb.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include "bmcusb.h"
 
 #define TIMEOUT   1000
-#define BYTESPERLINE 16
-
-#define MAPPING mapMultiDM01
 
 int main(int argc, char **argv)
 {
   int Nbmc;
 
   Nbmc = bmcusb_probe();
-  //bmcusb_setDebug(TRUE);
+//   bmcusb_setDebug(TRUE);
   
   printf("Found %d BMC Multi-Drivers.\n",Nbmc);
   
@@ -26,6 +24,7 @@ int main(int argc, char **argv)
     exit(1);
   } else printf("CLAIMED the USB interface to the BMC DM driver.\n");
   
+  printf("Firmware version: %s\n",bmcusb_getFirmwareVersion(DM));
   bmcusb_reset(DM);
   bmcusb_setHV(DM,TRUE);
   
@@ -34,16 +33,18 @@ int main(int argc, char **argv)
   long updates = 0;
   
   
-  for(nloop=0;nloop<10;nloop++) {
-    for(nlevel=0;nlevel<4096;nlevel+=8) {
+  for(nloop=0;nloop<1;nloop++) {
+    for(nlevel=0;nlevel<4096;nlevel+=5) {
       //printf("%d \n",nlevel);
       bmcusb_constantDM(DM,nlevel);
       updates++;
+      usleep(1000);
+      
     }
   }
   
   printf("Made %d updates to the DM.\n", updates);
-  bmcusb_zeroDM(DM);
+//   bmcusb_zeroDM(DM);
   bmcusb_setHV(DM,FALSE);
 
   bmcusb_release(DM);

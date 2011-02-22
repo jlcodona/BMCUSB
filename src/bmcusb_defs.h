@@ -1,21 +1,19 @@
 #ifndef BMCUSB_DEFS_H
 
 #include <usb.h>
+#include "bmcusb.h"
 
-#ifdef CI_DM_VID
 #include "CIUsbShared.h"
-#endif
-
-#ifdef CIUsb_MESSAGE_USBDEVICE
 #include "CIUsbLib.h"
-"CIUsbShared.h"
-#endif
 
 typedef struct {
   char devpath[256]; // The /dev/bus/usb path
+  char firmware[32]; // way too big.
   struct usb_bus *bus;
   struct usb_device *dev;
   usb_dev_handle *udev;
+  bmc_actuatorData_t actuators[USB_NUM_ACTUATORS_MULTI]; // assumed already mapped and ready to go.
+  int *mapping;
 } BMCUSB_DEVICE;
 
 #define MAX_BMCUSB_DEVICES 2

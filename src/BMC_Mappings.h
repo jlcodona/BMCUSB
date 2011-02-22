@@ -23,7 +23,7 @@ int i160TestMap[NUM_ACTUATORS] = // example actuator map
    55,129,121,159                                  //14
 };
 
-const int mapMultiDM00[NUM_ACTUATORS] = 
+int mapMultiDM00[NUM_ACTUATORS] = 
 { 40, 54, 108, 87, 31, 67, 92, 132, 48, 101, 114,
   68, 24, 71, 53, 127, 16, 12, 98, 81, 65, 136, 97,
   50, 32, 44, 128, 109, 59, 125, 91, 9, 49, 119, 107,
@@ -39,7 +39,7 @@ const int mapMultiDM00[NUM_ACTUATORS] =
   51, 156, 7, 56, 121, 58, 157, 102, 117, 2, 94, 158,
  104, 88, 35, 39, 159};
 
-const int mapMultiDM01[NUM_ACTUATORS] = 
+int mapMultiDM01[NUM_ACTUATORS] = 
 {88, 139, 28, 34, 91, 93, 109, 23, 39, 86, 10, 133, 
 117, 50, 129, 76, 81, 29, 59, 74, 135, 94, 5, 69, 
 110, 128, 85, 62, 40, 58, 121, 111, 105, 2, 3, 123, 
@@ -55,7 +55,7 @@ const int mapMultiDM01[NUM_ACTUATORS] =
 156, 137, 72, 38, 43, 157, 132, 78, 19, 60, 158, 122, 
 95, 30, 55, 159 };
 
-const int old_actuator_map[NUM_ACTUATORS] = { 
+int old_actuator_map[NUM_ACTUATORS] = { 
 	  0,  55,  54, 118, 113, 119, 124, 132, 130, 144,  94, 102, 
 	 59,  56,  48, 122, 116, 109, 123, 131, 136, 139,  95,  98,
 	 62,  60,  50,  52, 117, 114, 105, 128, 138, 140,  93,  96, 
