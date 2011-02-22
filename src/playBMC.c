@@ -135,16 +135,16 @@ int main(int argc, char **argv)
 	}
 	printf("I have CLAIMED the interface.\n");
 	
-	// bmReqType	Recip	Type	Dir	bReq	wValue	wIndex	wLength	[bReq]
-	// 0xC0		0	10	1	0xF0	0	0	0x16	eCIUsbCmndGetFirmwareVer
-	// 												
-	// 0x40		0	10	0	0xF5	0	0x0002	0	eCIUsbCmndSetControlBits
-	// 0x40		0	10	0	0xF5	0	0x0082	0	eCIUsbCmndSetControlBits
-	// 0x40		0	10	0	0xF5	0	0x0088	0	eCIUsbCmndSetControlBits
-	// 												
-	// Data block transfer...									
-	// 												
-	// 0x40		0	10	0	0xF5	0	0x0008	0	eCIUsbCmndSetControlBits
+	// bmReqType	Recip	Type	Dir	bReq	wValue	wIndex	wLength	[bReq]				
+	// 0xC0		0		10		1	0xF0		0	0		0x16		eCIUsbCmndGetFirmwareVer		
+	// 																				
+	// 0x40		0		10		0	0xF5		0	0x0002	0		eCIUsbCmndSetControlBits	
+	// 0x40		0		10		0	0xF5		0	0x0082	0		eCIUsbCmndSetControlBits	
+	// 0x40		0		10		0	0xF5		0	0x0088	0		eCIUsbCmndSetControlBits	
+	// 																				
+	// Data block transfer...																
+	// 																				
+	// 0x40		0		10		0	0xF5		0	0x0008	0		eCIUsbCmndSetControlBits	
 	
 	//int vcmd(usb_dev_handle *udev, int request, int value, int index, int size, char *bytes);
 	
@@ -191,8 +191,8 @@ int main(int argc, char **argv)
 	    printf("Testing PISTON...\n");
 	    
 	    counter = 0;
-	    for(nloop2=0; nloop2<10; nloop2++) {
-	      for(val=0; val<(1<<14); val+=16 ) {
+	    for(nloop2=0; nloop2<1; nloop2++) {
+	      for(val=0; val<(1<<14); val+=100) {
 		for(n=0; n<NUM_ACTUATORS ;n++) // n.b. this loops over 160 "actuators"
 		      sActData[n] = val;
 		

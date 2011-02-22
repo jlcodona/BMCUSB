@@ -1,4 +1,4 @@
-/*** uDM140.c *************************************************************************
+/*** bmcusb.h *************************************************************************
  * 
  * This is linux interface library for the BMC Multi-Driver Electronics.
  * This has not been tested with more than one Multi-Driver since that is all I have.  
@@ -39,7 +39,6 @@ typedef enum { FALSE = 0, TRUE = 1 } bool;
 // #define 0 false
 // #define 1 true
 
-
 ////////////////////////////////////////////////////////////////////////////
 // Function prototypes
 ////////////////////////////////////////////////////////////////////////////
@@ -51,12 +50,12 @@ int bmcusb_claim      	(int nDevId); 		// call before using.
 int bmcusb_release    	(int nDevId); 		// call before quitting.
 
 //int bmcusb_getStatus	(int nDevId, bmc_status_t* p_nStatus); // get device status. 
-
 // int bmcusb_setControl	(int nDevId, bmc_controlID_t nCntlId, bmc_status_t* p_nStatus);
 
-int bmcusb_assertReset  (int nDevId);
+int bmcusb_assertReset (int nDevId);
 int bmcusb_deassertReset(int nDevId);
-int bmcusb_reset	(int nDevId);
+int bmcusb_reset(int nDevId); // does both of the above.
+char *bmcusb_getFirmwareVersion(int nDevId);
 
 int bmcusb_setHV	(int nDevId, bool ON);
 
@@ -64,15 +63,18 @@ int bmcusb_setFrameSync	(int nDevId, bool ASSERT);
 int bmcusb_setLVShdn	(int nDevId, bool ASSERT);
 int bmcusb_setExtI2C	(int nDevId, bool ASSERT);
 
-int bmcusb_zeroDM	(int nDevId);
-int bmcusb_constantDM	(int nDevId, bmc_actuatorData_t value);
+int bmcusb_zeroDM(int nDevId);
+int bmcusb_constantDM(int nDevId, bmc_actuatorData_t value);
 
-int bmcusb_sendDM	(int nDevId, bmc_actuatorData_t* acts_cmds); // buffer size is tacit.
+int bmcusb_setDM(int nDevId, bmc_actuatorData_t* acts_cmds); // buffer size is tacit.
+int bmcusb_setMappedDM(int nDevId, bmc_actuatorData_t* acts_cmds); // buffer size is tacit.
+int bmcusb_sendDM(int nDevId); // sends the buffer previously set.
 
 int bmcusb_VendorRequest(int nDevId, int reqCode, int bToTarget, int wValue, int wIndex, char *buffer, int len);
 
 // Utility functions:
 void clearBuffer(bmc_actuatorData_t buf[], int N) ;
-bmc_actuatorData_t *mapActs(bmc_actuatorData_t *FROM, bmc_actuatorData_t *TO, const int actMap[]);
+bmc_actuatorData_t *mapActs(int nDevId, bmc_actuatorData_t *FROM, bmc_actuatorData_t *TO);
+bmc_actuatorData_t *_mapActs(bmc_actuatorData_t *FROM, bmc_actuatorData_t *TO, int *map);
 
 #endif
