@@ -6,8 +6,9 @@
 
 #include "BMC_Mappings.h"
 
+#include "bmcusb.h"
+
 #define TIMEOUT   1000
-#define BYTESPERLINE 16
 
 #define MAPPING mapMultiDM01
 

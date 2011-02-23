@@ -150,7 +150,7 @@ int bmcusb_release(int nDevId) {  // call before quitting.
 int bmcusb_VendorRequest(int nDevId, int reqCode, int bToTarget, int wValue, int wIndex, char *buffer, int len){
     DEBUG_BLURB
     int ret;
-    printf("VendorRequest: %02X %d 0x%04x %d\n",reqCode,wValue,wIndex,len);
+    if(BMCUSB_DEBUG) printf("VendorRequest: %02X %d 0x%04x %d\n",reqCode,wValue,wIndex,len);
     if(!bToTarget)
       ret = usb_control_msg(BMCDEV[nDevId].udev,0xC0,reqCode,wValue,wIndex,buffer,len,TIMEOUT);
     else
@@ -194,7 +194,7 @@ int bmcusb_setHV(int nDevId, bool ON){
   if(ON) // Turn ON the High Voltage Power to the DM...
   {
     if(BMCUSB_DEBUG) printf("\nDEBUG: Turning HV ON.\n");
-      usleep(250000); // I think this is just for the MINI, but I am playing it safe.
+      // usleep(250000); // I think this is just for the MINI, but I am playing it safe.
     ret = bmcusb_VendorRequest(nDevId, eCIUsbCmndSetControlBits, 1, 0, 0x0088, NULL, 0);
   } 
   else  // Turn OFF the High Voltage Power to the DM...
@@ -305,8 +305,8 @@ int bmcusb_sendDM(int nDevId) { // This sends the buffer in BMCDEV.  Set it sepa
     printf("\n");
   }
 
-  int retval = usb_bulk_write(BMCDEV[nDevId].udev, ENDPOINT, (const char *) BMCDEV[nDevId].actuators, 320, TIMEOUT);
-  
+  int retval = usb_bulk_write(BMCDEV[nDevId].udev, 2, (const char *) (BMCDEV[nDevId].actuators), 320, TIMEOUT);
+    //retval = usb_bulk_write(udev, 2, (const char *) sActData, NUM_ACTUATORS*sizeof(u_int16_t), TIMEOUT);
   if(retval!=USB_BYTES_PER_FRAME_MULTI) {
     if(retval==-110) {
       fprintf(stderr,"\nFAILED: Actuator bulk step write failed for dev=%d. TIMEOUT\n\n",nDevId);
@@ -330,6 +330,51 @@ void clearBuffer(bmc_actuatorData_t buf[], int N) {
 void setMap(int nDevId, int *mapping) {
   BMCDEV[nDevId].mapping = mapping;
 }
+
+struct usb_device *bmcusb_getDev(int nDevId) {
+    return(BMCDEV[nDevId].dev);
+}
+
+usb_dev_handle *bmcusb_getUdev(int nDevId) {
+    return(BMCDEV[nDevId].udev);
+}
+
+int bmcusb_printStatus(int nDevId){
+    int status = bmcusb_getStatus(nDevId);
+
+    printf("STATUS[%d]: ",nDevId);
+
+    // bit[0]=FrameErr,  bit[1]=RdHvaE, bit[2]=CableOk, bit[9]=ExEepromPresent
+    // bit[7]=Set/Reset, bit[1]=Freset, bit[2]=FrameSync, bit[3]=HvEnab
+    if(status & 0x01) printf("[FRAME ERROR]");
+    if(status & 0x02) printf("[RdHvaE]");
+    if(!(status & 0x04)) printf("[Check Cables]");
+    if(status & 0x08) printf("[bit3]");
+    if(status & 0x10) printf("[bit4]");
+    if(status & 0x20) printf("[bit5]");
+    if(status & 0x40) printf("[bit6]");
+    if(status & 0x80) printf("[bit7]");
+    if(status & 0x100) printf("[bit8]");
+    if(status & 0x200) printf("[ExEepromPresent]");
+    if(status & 0x400) printf("[bit10]");
+    printf("\n");
+    return(status);
+}
+
+int bmcusb_getStatus(int nDevId){
+    u_int16_t statusBits = 0;
+
+    bmcusb_VendorRequest(nDevId,eCIUsbCmndGetStatusBits,0,0,0,(char *) &statusBits,sizeof(u_int16_t));
+
+    return(statusBits);
+}
+
+int bmcusb_setControl(int nDevId, int nCntlId){
+    //if (!m_UsbComm.VendorRequest(nDevId, eCIUsbCmndSetControlBits, true /*ToTarget*/, 0 /*value*/, 0x0010 /*index*/, NULL, 0))
+    return(bmcusb_VendorRequest(nDevId,eCIUsbCmndSetControlBits,1,0,0x0010,NULL,0));
+}
+
+
 
 bmc_actuatorData_t *mapActs(int nDevId, bmc_actuatorData_t *FROM, bmc_actuatorData_t *TO) {
   int n, *map = BMCDEV[nDevId].mapping;

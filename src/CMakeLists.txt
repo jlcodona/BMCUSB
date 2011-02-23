@@ -6,6 +6,9 @@
 ADD_EXECUTABLE(playBMC playBMC.c)
 target_link_libraries(playBMC usb)
 
+ADD_EXECUTABLE(playMorph playMorph.c)
+target_link_libraries(playMorph bmcusb usb)
+
 ADD_EXECUTABLE(testbmcusb testbmcusb.c)
 target_link_libraries(testbmcusb bmcusb usb)
 

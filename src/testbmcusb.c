@@ -11,7 +11,7 @@ int main(int argc, char **argv)
   int Nbmc;
 
   Nbmc = bmcusb_probe();
-//   bmcusb_setDebug(TRUE);
+  //bmcusb_setDebug(TRUE);
   
   printf("Found %d BMC Multi-Drivers.\n",Nbmc);
   
@@ -26,20 +26,26 @@ int main(int argc, char **argv)
   
   printf("Firmware version: %s\n",bmcusb_getFirmwareVersion(DM));
   bmcusb_reset(DM);
+  bmcusb_printStatus(DM);
   bmcusb_setHV(DM,TRUE);
+  bmcusb_printStatus(DM);
   
   int nlevel;
   int nloop;
   long updates = 0;
-  
+
+  u_int16_t data[USB_NUM_ACTUATORS_MULTI];
   
   for(nloop=0;nloop<1;nloop++) {
     for(nlevel=0;nlevel<4096;nlevel+=5) {
-      //printf("%d \n",nlevel);
-      bmcusb_constantDM(DM,nlevel);
+	int q;
+	for(q=0;q<USB_NUM_ACTUATORS_MULTI;q++) data[q] = nlevel;
+	bmcusb_setDM(DM,data);
+	//printf("%d \n",nlevel);
+	//bmcusb_constantDM(DM,nlevel);
+	//bmcusb_printStatus(DM);
       updates++;
       usleep(1000);
-      
     }
   }
   

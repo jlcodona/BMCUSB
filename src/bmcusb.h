@@ -26,6 +26,13 @@
 
 #include <stdint.h>
 
+#include "CIUsbLib.h"
+#include "CIUsbShared.h"
+
+#include "BMC_Mappings.h"
+
+#include <usb.h>
+
 /* LIBRARY DEFINES */
 
 typedef long 		bmc_controlID_t;
@@ -45,12 +52,16 @@ typedef enum { FALSE = 0, TRUE = 1 } bool;
 
 void bmcusb_setDebug(bool state);
 
-int bmcusb_probe(); 	// returns number of devices found.
-int bmcusb_claim      	(int nDevId); 		// call before using.
-int bmcusb_release    	(int nDevId); 		// call before quitting.
+int bmcusb_probe(); 		// returns number of devices found.
+int bmcusb_claim(int nDevId); 	// call before using.
+int bmcusb_release(int nDevId); // call before quitting.
 
-//int bmcusb_getStatus	(int nDevId, bmc_status_t* p_nStatus); // get device status. 
-// int bmcusb_setControl	(int nDevId, bmc_controlID_t nCntlId, bmc_status_t* p_nStatus);
+int bmcusb_printStatus(int nDevId);
+int bmcusb_getStatus(int nDevId);
+int bmcusb_setControl(int nDevId, int nCntlId);
+
+struct usb_device *bmcusb_getDev(int nDevId);
+usb_dev_handle *bmcusb_getUdev(int nDevId);
 
 int bmcusb_assertReset (int nDevId);
 int bmcusb_deassertReset(int nDevId);
