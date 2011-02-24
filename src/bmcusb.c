@@ -38,9 +38,9 @@ static BMCUSB_DEVICE BMCDEV[MAX_BMCUSB_DEVICES];
 static struct usb_device *bmc_devs[MAX_BMCUSB_DEVICES];
 static int Nbmc = 0;
 
-static bool BMCUSB_DEBUG = FALSE;
+static int BMCUSB_DEBUG = 0;
 
-void bmcusb_setDebug(bool state) {
+void bmcusb_setDebug(int state) {
   BMCUSB_DEBUG = state;
   if(state)
     usb_set_debug(5);
@@ -187,7 +187,7 @@ int bmcusb_reset(int nDevId){
   return ret; 
 }
 
-int bmcusb_setHV(int nDevId, bool ON){
+int bmcusb_setHV(int nDevId, int ON){
   int ret;
   DEBUG_BLURB
   
@@ -205,7 +205,7 @@ int bmcusb_setHV(int nDevId, bool ON){
   return ret;
 }
 
-int bmcusb_setFrameSync(int nDevId, bool ASSERT){
+int bmcusb_setFrameSync(int nDevId, int ASSERT){
   int ret;
   DEBUG_BLURB
   
@@ -220,7 +220,7 @@ int bmcusb_setFrameSync(int nDevId, bool ASSERT){
   return ret;
 }
 
-int bmcusb_setLVShdn(int nDevId, bool ASSERT) { // I have **NO IDEA** what this means!
+int bmcusb_setLVShdn(int nDevId, int ASSERT) { // I have **NO IDEA** what this means!
 
   int ret;
   DEBUG_BLURB
@@ -236,7 +236,7 @@ int bmcusb_setLVShdn(int nDevId, bool ASSERT) { // I have **NO IDEA** what this 
   return ret;
 }
 
-int bmcusb_setExtI2C(int nDevId, bool ASSERT){
+int bmcusb_setExtI2C(int nDevId, int ASSERT){
   int ret;
   DEBUG_BLURB
   

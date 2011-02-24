@@ -41,7 +41,7 @@ typedef uint16_t 	bmc_actuatorData_t;
 typedef int16_t WORD;
 typedef char BYTE;
 // typedef int bool; 
-typedef enum { FALSE = 0, TRUE = 1 } bool; 
+// typedef enum { FALSE = 0, TRUE = 1 } bool; 
 // enum bool { FALSE = 0, TRUE = 1 };
 // #define 0 false
 // #define 1 true
@@ -50,7 +50,7 @@ typedef enum { FALSE = 0, TRUE = 1 } bool;
 // Function prototypes
 ////////////////////////////////////////////////////////////////////////////
 
-void bmcusb_setDebug(bool state);
+void bmcusb_setDebug(int state);
 
 int bmcusb_probe(); 		// returns number of devices found.
 int bmcusb_claim(int nDevId); 	// call before using.
@@ -68,11 +68,11 @@ int bmcusb_deassertReset(int nDevId);
 int bmcusb_reset(int nDevId); // does both of the above.
 char *bmcusb_getFirmwareVersion(int nDevId);
 
-int bmcusb_setHV	(int nDevId, bool ON);
+int bmcusb_setHV	(int nDevId, int ON);
 
-int bmcusb_setFrameSync	(int nDevId, bool ASSERT);
-int bmcusb_setLVShdn	(int nDevId, bool ASSERT);
-int bmcusb_setExtI2C	(int nDevId, bool ASSERT);
+int bmcusb_setFrameSync	(int nDevId, int ASSERT);
+int bmcusb_setLVShdn	(int nDevId, int ASSERT);
+int bmcusb_setExtI2C	(int nDevId, int ASSERT);
 
 int bmcusb_zeroDM(int nDevId);
 int bmcusb_constantDM(int nDevId, bmc_actuatorData_t value);
