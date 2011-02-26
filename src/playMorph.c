@@ -25,18 +25,19 @@ int main(int argc, char **argv)
 
     u_int16_t sActData[NUM_ACTUATORS] = {0x0000};    // unmapped actuator data for sending to the DM
     int counter, val, n, nloop, nloop2;
-
-    for (nloop=0; nloop<2; nloop++) {
+    
+    int MAXVAL = 0x8000;
+    for (nloop=0; nloop<4; nloop++) {
         counter = 0;
         for (nloop2=0; nloop2<4; nloop2++) {
-            for (val=0; val<(1<<14); val+=5) {
+            for (val=0; val<MAXVAL; val+=1) {
                 bmcusb_constantDM(DM,val);
             }
         }
 
         clearBuffer(sActData,NUM_ACTUATORS);
         for (n=0;n<NUM_ACTUATORS;n++) {
-            for (val=0; val<(1<<14); val+=150 ) {
+            for (val=0; val<MAXVAL; val+=10 ) {
                 sActData[n] = val;
                 bmcusb_setMappedDM(DM,sActData);
             }
