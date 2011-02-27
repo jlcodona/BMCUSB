@@ -7,6 +7,10 @@
 #include "BMC_Mappings.h"
 #include "CIUsbLib.h"
 
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+
+static int MEX_VERBOSE = 0;
+
 extern void _main();
 
 static int Nbmc = 0;
@@ -37,43 +41,31 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     char *cmd = (char *)mxCalloc(buflen, sizeof(char));
     //output_buf = mxCalloc(buflen, sizeof(char));
 
-    /* Copy the string data from prhs[0] into a C string
-     * input_buf. */
+    /* Copy the string data from prhs[0] into a C string * input_buf. */
     int status = mxGetString(prhs[0], cmd, buflen);
     if (status != 0)
         mexWarnMsgTxt("Not enough space. String is truncated.");
 
-    //printf("mexBMC: command is '%s'\n",cmd);
-
-    // Commands:
-    // "help"
-    // "init"
-    // "claim"
-    // "release"
-    // "reset"
-    // "power"
-    // "clear" or "zero"
-    // "setDM"
+    if(MEX_VERBOSE) printf("mexBMC: command is '%s'\n",cmd);
 
     if (!strcmp(cmd,"help")) {
-        printf("Commands... (for simplicity, this mex command assumes you have only one DM.)\n");
-        printf("help: this output\n");
-        printf("init: scan for devices and return the count.\n");
-        printf("reset\n");
-        printf("powerON or powerOFF\n");
-        printf("clear or zero\n");
-        printf("setDM (can be a scalar or a 12x12 array)\n");
-        printf("setActs (uses actuator list as a buffer.  NOTE: 160 elements!!!)\n");
-        printf("setMap (Define and use an actuator map. NOTE: 160 elements!!!)\n");
-
+        printf("Commands: ");
+        printf("claim clear debug help init powerOFF powerON quiet release \nreset setMexDebug setDM setDM_ setMap startup0 shutdown0 verbose zero\n");
         return;
-    } else if (!strcmp(cmd,"init")) { // init
+    }
+
+
+
+// init
+    else if (!strcmp(cmd,"init")) { // init
         int ndevices = bmcusb_probe();
         printf("Found %d BMC Multi-Driver boxes.\n",ndevices);
         return;
+    }
 
-        ///////////////////////////////////////
-    } else if (!strcmp(cmd,"clear") || !strcmp(cmd,"zero") ) {
+
+// clear
+    else if (!strcmp(cmd,"clear") || !strcmp(cmd,"zero") ) {
         if (nrhs < 2) { // no DM specified.
             bmcusb_zeroDM(0);
             return;
@@ -86,12 +78,39 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             }
 
             int dm = (int) *mxGetPr(prhs[1]);
-            printf("clear: clearing SmartDriver DM #%d.\n",dm);
+            if(MEX_VERBOSE) printf("clear: clearing SmartDriver DM #%d.\n",dm);
             bmcusb_zeroDM(dm);
             return;
         }
         return;
-    } else if (!strcmp(cmd,"setDM")) {
+    }
+
+
+
+// setMexDebug
+    else if (!strcmp(cmd,"setMexDebug") || !strcmp(cmd,"zero") ) {
+        if (nrhs < 2) { // no argument just toggles debug state.
+            MEX_VERBOSE = !MEX_VERBOSE;
+            return;
+        } else if (nrhs >= 2) { // a DM was specified.
+            int m = mxGetM(prhs[1]);
+            int n = mxGetN(prhs[1]);
+
+            if (m>1 || n>1) {
+                printf("setDebug: WARNING! Argument not a scalar. (%d,%d)\n",m,n);
+            }
+
+            MEX_VERBOSE = (int) *mxGetPr(prhs[1]);
+            if(MEX_VERBOSE) printf("setDebug: MEX_VERBOSE set to #%d.\n",MEX_VERBOSE);
+            return;
+        }
+        return;
+    }
+
+
+
+// setDM
+    else if (!strcmp(cmd,"setDM")) {
         // This requires two more arguments: (cmd,dm,DAC)
         // DAC can be a scalar or a 12x12 matrix.
         // DAC is expected to contain integer DAC settings.
@@ -112,14 +131,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             bmcusb_constantDM(dm,dac);
             return;
         } else if (M==12 && N==12) { // DAC is a 12x12 matrix.
-            u_int16_t DAC[160]; // This is the size of the Multi-Driver USB buffer.  We only use the first 144;
+            u_int16_t DAC[USB_NUM_ACTUATORS_MULTI]; // This is the size of the Multi-Driver USB buffer.  We only use the first 144;
             double *fDAC = mxGetPr(prhs[2]); // The MATLAB array will be doubles.
             int i;
             for(i=0;i<M*N;i++) {
                 DAC[i] = (u_int16_t)(fDAC[i]);
-                // printf("%6d (%7.1f) \n", DAC[i], fDAC[i]);
+                if(MEX_VERBOSE) printf("%3d: %6d (%7.1f) \n", i,DAC[i],fDAC[i]);
             }
-            // printf("\n");
+            if(MEX_VERBOSE) printf("\n");
 
             bmcusb_setMappedDM(dm,DAC);
 
@@ -128,50 +147,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             return;
         }
         return;
+      }
 
-        ///////////////////////////////////////
- 
-      
-        
-        
-        
-      } else if (M==12 && N==12) { // DAC is a 12x12 matrix.
-            u_int16_t DAC[160]; // This is the size of the Multi-Driver USB buffer.  We only use the first 144;
-            double *fDAC = mxGetPr(prhs[2]); // The MATLAB array will be doubles.
-            int i;
-            for(i=0;i<M*N;i++) {
-                DAC[i] = (u_int16_t)(fDAC[i]);
-                // printf("%6d (%7.1f) \n", DAC[i], fDAC[i]);
-            }
-            // printf("\n");
-
-            bmcusb_setMappedDM(dm,DAC);
-
-        } else {
-            printf("ERROR: mexBMC setDM: DAC has dims %dx%d.\n",M,N);
-            return;
-        }
-        return;
-
-        ///////////////////////////////////////
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-    } else if (!strcmp(cmd,"setDM_")) {
-        // This requires two more arguments: (cmd,dm,DAC)
-        // DAC can be a scalar or a 12x12 matrix.
-        // DAC is expected to contain integer DAC settings.
+// setDM_
+    else if (!strcmp(cmd,"setDM_")) {
+        // Unmapped setDM_: This requires two more arguments: (cmd,dm,DAC)
+        // DAC can be any scalar or a 12x12 matrix.
+        // DAC can be any dimension, but only the first 160 elements get sent.
 
         if (nrhs < 3) { // no DM specified.
             mexWarnMsgTxt("mexBMC setDM_: require two args: dm,DAC.");
@@ -183,52 +165,117 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         int M = mxGetM(prhs[2]);
         int N = mxGetN(prhs[2]);
 
-        if (M==1 && N==1) { // DAC is a scalar
-            int dac = (int) *mxGetPr(prhs[2]);
+        u_int16_t DAC[USB_NUM_ACTUATORS_MULTI] = {0}; // This is the size of the Multi-Driver USB buffer.  We only use the first 144;
+        double *fDAC = mxGetPr(prhs[2]); // The MATLAB array will be doubles.
+        int i; int Nlimit = min(M*N,USB_NUM_ACTUATORS_MULTI);
 
-            bmcusb_constantDM(dm,dac);
-            return;
-        } else if (M==12 && N==12) { // DAC is a 12x12 matrix.
-            u_int16_t DAC[160];
-            int *iDAC = (int *) mxGetPr(prhs[2]);
-            int i;
-            for(i=0;i<M*N;i++) {
-                DAC[i] = (WORD)(iDAC[i]);
-                // printf("%6d (%7.1f) \n", DAC[i], fDAC[i]);
-            }
-            // printf("\n");
+        for (i=0;i<Nlimit;i++) {
+            DAC[i] = (u_int16_t)(fDAC[i]);
+            if (MEX_VERBOSE) printf("%3d: %6d (%7.1f) \n", i,DAC[i],fDAC[i]);
+        }
+        if (MEX_VERBOSE) printf("\n");
 
-            bmcusb_setMappedDM(dm,DAC);
-        } else {
-            printf("mexBMC setDM_: DAC has dims %dx%d. This is an error.\n",M,N);
+        bmcusb_setDM(dm,DAC);
+        return;
+    }
+
+// setMap
+    else if (!strcmp(cmd,"setMap")) {
+        // This requires two more arguments: (cmd,dm,MAP)
+        // MAP is a linear map array from unwrapped matrix location to serialized command slot.
+        // MAP is an integer map of some length, but only the first 160 will be used.
+
+        if (nrhs < 3) { // no MAP specified.
+            mexWarnMsgTxt("mexBMC setMap: requires two args: dm,MAP.");
             return;
         }
+
+        int dm = (int) *mxGetPr(prhs[1]);
+
+        int M = mxGetM(prhs[2]);
+        int N = mxGetN(prhs[2]);
+
+        int Nelements = min(N*M,USB_NUM_ACTUATORS_MULTI);
+
+        double *fMAP = mxGetPr(prhs[2]); // The MATLAB array will be doubles.
+        int i;
+        for (i=0;i<Nelements;i++) {
+            customMap[i] = (int)(fMAP[i]);
+            if(MEX_VERBOSE) printf("%3d: %6d (%7.1f) \n", i,customMap[i],fMAP[i]);
+        }
+        if(MEX_VERBOSE) printf("\n");
+
+        bmcusb_setMap(dm,customMap);
         return;
-    } else if (!strcmp(cmd,"debug")) {
+    }
+
+// debug
+    else if (!strcmp(cmd,"debug")) {
         bmcusb_setDebug(1);
         usb_set_debug(5);
-    } else if (!strcmp(cmd,"verbose")) {
+    }
+
+// verbose
+    else if (!strcmp(cmd,"verbose")) {
+        MEX_VERBOSE = 1;
         bmcusb_setDebug(1);
         usb_set_debug(5);
-    } else if (!strcmp(cmd,"quiet")) {
+    }
+
+// quiet
+    else if (!strcmp(cmd,"quiet")) {  // TODO: Fix support for multiple DMs.
+        MEX_VERBOSE = 0;
         bmcusb_setDebug(0);
         usb_set_debug(0);
-    } else if (!strcmp(cmd,"reset")) {
-        bmcusb_reset(0);
-        return;
-    } else if (!strcmp(cmd,"claim")) {
+    }
+
+// startup0 (this is a shorthand command for claim, reset, and enable power on DM 0).
+    else if (!strcmp(cmd,"startup0")) {  
         bmcusb_claim(0);
-        return;
-    } else if (!strcmp(cmd,"release")) {
-        bmcusb_release(0);
-        return;
-    } else if (!strcmp(cmd,"powerON")) {
+        bmcusb_reset(0);
         bmcusb_setHV(0,1);
         return;
-    } else if (!strcmp(cmd,"powerOFF")) {
+    }
+    
+// shutdown0 (this is a shorthand command for power-off and release DM 0).
+    else if (!strcmp(cmd,"shutdown0")) {
+        bmcusb_setHV(0,0);
+        bmcusb_release(0);
+        return;
+    }
+
+// reset
+    else if (!strcmp(cmd,"reset")) {  // TODO: Fix support for multiple DMs.
+        bmcusb_reset(0);
+        return;
+    }
+
+// claim
+    else if (!strcmp(cmd,"claim")) {  // TODO: Fix support for multiple DMs.
+        bmcusb_claim(0);
+        return;
+    }
+    
+// release
+    else if (!strcmp(cmd,"release")) {  // TODO: Fix support for multiple DMs.
+        bmcusb_release(0);
+        return;
+    }
+    
+// powerON
+    else if (!strcmp(cmd,"powerON")) {  // TODO: Fix support for multiple DMs.
+        bmcusb_setHV(0,1);
+        return;
+    }
+    
+// powerOFF
+    else if (!strcmp(cmd,"powerOFF")) {  // TODO: Fix support for multiple DMs.
         bmcusb_setHV(0,0);
         return;
-    } else {
+    }
+    
+// out of options...
+    else {
         mexWarnMsgTxt("Unknown command.");
         return;
     }

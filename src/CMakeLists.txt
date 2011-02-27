@@ -14,10 +14,10 @@ target_link_libraries(testbmcusb bmcusb usb)
 
 # Shared libraries for controlling the BMC USB DM
 #build a shared library
-ADD_LIBRARY(bmcusb SHARED bmcusb.c)
+ADD_LIBRARY(bmcusb SHARED bmcusb.c bmcusb.h bmcusb_defs.h BMC_Mappings.h CIUsbLib.h CIUsbShared.h )
 
 # C++ shared library
-ADD_LIBRARY(bmcusboo SHARED bmcusboo.cpp)
+#ADD_LIBRARY(bmcusboo SHARED bmcusboo.cpp)
 
 #add an install target here
 #INSTALL_FILES(...)

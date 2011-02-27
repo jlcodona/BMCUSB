@@ -85,7 +85,13 @@ int bmcusb_VendorRequest(int nDevId, int reqCode, int bToTarget, int wValue, int
 
 // Utility functions:
 void clearBuffer(bmc_actuatorData_t buf[], int N) ;
+
+// These use the configured mapping.
+void bmcusb_setMap(int nDevId, int *mapping);
 bmc_actuatorData_t *mapActs(int nDevId, bmc_actuatorData_t *FROM, bmc_actuatorData_t *TO);
+bmc_actuatorData_t *mapNActs(int nDevId, bmc_actuatorData_t *FROM, bmc_actuatorData_t *TO, int nActs);
+
+// This maps the default number of acts through the supplied mapping.
 bmc_actuatorData_t *_mapActs(bmc_actuatorData_t *FROM, bmc_actuatorData_t *TO, int *map);
 
 #endif

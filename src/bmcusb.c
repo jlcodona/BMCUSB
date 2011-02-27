@@ -327,7 +327,7 @@ void clearBuffer(bmc_actuatorData_t buf[], int N) {
   }
 }
 
-void setMap(int nDevId, int *mapping) {
+void bmcusb_setMap(int nDevId, int *mapping) {
   BMCDEV[nDevId].mapping = mapping;
 }
 
@@ -374,14 +374,21 @@ int bmcusb_setControl(int nDevId, int nCntlId){
     return(bmcusb_VendorRequest(nDevId,eCIUsbCmndSetControlBits,1,0,0x0010,NULL,0));
 }
 
-
-
 bmc_actuatorData_t *mapActs(int nDevId, bmc_actuatorData_t *FROM, bmc_actuatorData_t *TO) {
   int n, *map = BMCDEV[nDevId].mapping;
   
   for(n=0;n<USB_NUM_ACTUATORS_MULTI;n++)
     TO[n] = FROM[map[n]];
   
+  return(TO);
+}
+
+bmc_actuatorData_t *mapNActs(int nDevId, bmc_actuatorData_t *FROM, bmc_actuatorData_t *TO, int nActs) {
+  int n, *map = BMCDEV[nDevId].mapping;
+
+  for(n=0;n<nActs;n++)
+    TO[n] = FROM[map[n]];
+
   return(TO);
 }
 
