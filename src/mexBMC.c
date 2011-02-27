@@ -5,10 +5,12 @@
 #include <math.h>
 #include "bmcusb.h"
 #include "BMC_Mappings.h"
+#include "CIUsbLib.h"
 
 extern void _main();
 
 static int Nbmc = 0;
+static int customMap[USB_NUM_ACTUATORS_MULTI] = {0}; // This is our own actuator map storage.
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
@@ -60,7 +62,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         printf("reset\n");
         printf("powerON or powerOFF\n");
         printf("clear or zero\n");
-        printf("setDM\n");
+        printf("setDM (can be a scalar or a 12x12 array)\n");
+        printf("setActs (uses actuator list as a buffer.  NOTE: 160 elements!!!)\n");
+        printf("setMap (Define and use an actuator map. NOTE: 160 elements!!!)\n");
 
         return;
     } else if (!strcmp(cmd,"init")) { // init
@@ -120,12 +124,50 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             bmcusb_setMappedDM(dm,DAC);
 
         } else {
-            printf("mexBMC setDM: DAC has dims %dx%d.  That is an error.\n",M,N);
+            printf("ERROR: mexBMC setDM: DAC has dims %dx%d.\n",M,N);
             return;
         }
         return;
 
         ///////////////////////////////////////
+ 
+      
+        
+        
+        
+      } else if (M==12 && N==12) { // DAC is a 12x12 matrix.
+            u_int16_t DAC[160]; // This is the size of the Multi-Driver USB buffer.  We only use the first 144;
+            double *fDAC = mxGetPr(prhs[2]); // The MATLAB array will be doubles.
+            int i;
+            for(i=0;i<M*N;i++) {
+                DAC[i] = (u_int16_t)(fDAC[i]);
+                // printf("%6d (%7.1f) \n", DAC[i], fDAC[i]);
+            }
+            // printf("\n");
+
+            bmcusb_setMappedDM(dm,DAC);
+
+        } else {
+            printf("ERROR: mexBMC setDM: DAC has dims %dx%d.\n",M,N);
+            return;
+        }
+        return;
+
+        ///////////////////////////////////////
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     } else if (!strcmp(cmd,"setDM_")) {
         // This requires two more arguments: (cmd,dm,DAC)
         // DAC can be a scalar or a 12x12 matrix.
