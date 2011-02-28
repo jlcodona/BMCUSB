@@ -266,26 +266,37 @@ int bmcusb_constantDM(int nDevId, bmc_actuatorData_t value) {
   return(bmcusb_sendDM(nDevId));
 }
 
-int bmcusb_setDM(int nDevId, bmc_actuatorData_t *value) {
+int bmcusb_setDM(int nDevId, bmc_actuatorData_t *values) {
   DEBUG_BLURB
   int n;
+  bmc_actuatorData_t *acts = BMCDEV[nDevId].actuators;
   
   for(n=0;n<USB_NUM_ACTUATORS_MULTI;n++) 
-    BMCDEV[nDevId].actuators[n] = value[n];
+    acts[n] = values[n];
   
   return(bmcusb_sendDM(nDevId));
 }
 
 int bmcusb_setMappedDM(int nDevId, bmc_actuatorData_t *values) {
   DEBUG_BLURB
-  int n, *map;
-  
-  map = BMCDEV[nDevId].mapping;
-  
+  int n;
+  int *map = BMCDEV[nDevId].mapping;
   bmc_actuatorData_t *acts = BMCDEV[nDevId].actuators;
   
   for(n=0;n<USB_NUM_ACTUATORS_MULTI;n++) 
     acts[n] = values[map[n]];
+  
+  return(bmcusb_sendDM(nDevId));
+}
+
+int bmcusb_setPostMappedDM(int nDevId, bmc_actuatorData_t *values) {
+  DEBUG_BLURB
+  int n;
+  int *map = BMCDEV[nDevId].mapping;
+  bmc_actuatorData_t *acts = BMCDEV[nDevId].actuators;
+  
+  for(n=0;n<USB_NUM_ACTUATORS_MULTI;n++) 
+    acts[map[n]] = values[n];
   
   return(bmcusb_sendDM(nDevId));
 }

@@ -110,7 +110,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 
 // setDM
-    else if (!strcmp(cmd,"setDM")) {
+    else if (!strcmp(cmd,"setDM") || !strcmp(cmd,"setMappedDM")||!strcmp(cmd,"setPremappedDM")) {
         // This requires two more arguments: (cmd,dm,DAC)
         // DAC can be a scalar or a 12x12 matrix.
         // DAC is expected to contain integer DAC settings.
@@ -149,14 +149,57 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         return;
       }
 
+
+// setPostmappedDM
+    else if (!strcmp(cmd,"setPostmappedDM") || !strcmp(cmd,"setPostMappedDM") || !strcmp(cmd,"setPostDM")) {
+        // This requires two more arguments: (cmd,dm,DAC)
+        // DAC can be a scalar or a 12x12 matrix.
+        // DAC is expected to contain integer DAC settings.
+
+        if (nrhs < 3) { // no DM specified.
+            mexWarnMsgTxt("mexBMC setDM: require two args: dm,DAC.");
+            return;
+        }
+
+        int dm = (int) *mxGetPr(prhs[1]);
+
+        int M = mxGetM(prhs[2]);
+        int N = mxGetN(prhs[2]);
+
+        if (M==1 && N==1) { // DAC is a scalar
+            int dac = (int) *mxGetPr(prhs[2]);
+
+            bmcusb_constantDM(dm,dac);
+            return;
+        } else if (M==12 && N==12) { // DAC is a 12x12 matrix.
+            u_int16_t DAC[USB_NUM_ACTUATORS_MULTI]; // This is the size of the Multi-Driver USB buffer.  We only use the first 144;
+            double *fDAC = mxGetPr(prhs[2]); // The MATLAB array will be doubles.
+            int i;
+            for(i=0;i<M*N;i++) {
+                DAC[i] = (u_int16_t)(fDAC[i]);
+                if(MEX_VERBOSE) printf("%3d: %6d (%7.1f) \n", i,DAC[i],fDAC[i]);
+            }
+            if(MEX_VERBOSE) printf("\n");
+
+            bmcusb_setPostMappedDM (dm,DAC);
+
+        } else {
+            printf("ERROR: mexBMC setDM: DAC has dims %dx%d.\n",M,N);
+            return;
+        }
+        return;
+      }
+
+
+
 // setDM_
-    else if (!strcmp(cmd,"setDM_")) {
+    else if (!strcmp(cmd,"setDM_")||!strcmp(cmd,"setUnmappedDM")) {
         // Unmapped setDM_: This requires two more arguments: (cmd,dm,DAC)
         // DAC can be any scalar or a 12x12 matrix.
         // DAC can be any dimension, but only the first 160 elements get sent.
 
         if (nrhs < 3) { // no DM specified.
-            mexWarnMsgTxt("mexBMC setDM_: require two args: dm,DAC.");
+            mexWarnMsgTxt("mexBMC setUnmappedDM: require two args: dm,DAC.");
             return;
         }
 

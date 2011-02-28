@@ -79,6 +79,7 @@ int bmcusb_constantDM(int nDevId, bmc_actuatorData_t value);
 
 int bmcusb_setDM(int nDevId, bmc_actuatorData_t* acts_cmds); // buffer size is tacit.
 int bmcusb_setMappedDM(int nDevId, bmc_actuatorData_t* acts_cmds); // buffer size is tacit.
+int bmcusb_setPostMappedDM(int nDevId, bmc_actuatorData_t *values);
 int bmcusb_sendDM(int nDevId); // sends the buffer previously set.
 
 int bmcusb_VendorRequest(int nDevId, int reqCode, int bToTarget, int wValue, int wIndex, char *buffer, int len);
