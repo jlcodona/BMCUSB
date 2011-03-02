@@ -1,0 +1,1 @@
+mexBMC('shutdown0');
