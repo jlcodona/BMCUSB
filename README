@@ -1,0 +1,13 @@
+This file must be distributed with this software.
+
+This is a Linux shared library for accessing and controlling a Bostom Micromachines USB Multi-Driver DM Controller.
+It also includes support for calling the library from MATLAB using a mex file.
+I am releasing this to open source in the hopes that it will be useful for others.
+Please don't make me regret it.
+
+If something bad happens to your hardware or application through the use of this software, you agree that I, Johanan L. Codona, 
+The University of Arizona, the Center for Astronomical Adaptive Optics, and Boston Micromachines are not liable.
+This also extends to any subjects you were using this software to treat or examine.
+
+Johanan L. Codona, PhD
+March 17, 2011

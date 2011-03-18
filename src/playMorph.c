@@ -1,3 +1,8 @@
+// This program was my test used during during my development of the Linux BMC driver.
+// It is called playMorph because I was "morphing" my old code into the new code
+// as I added subroutines to the library.  
+// JLCodona 20110317.
+
 #include <stdio.h>
 #include <usb.h>
 #include <stdlib.h>

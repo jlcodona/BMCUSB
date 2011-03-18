@@ -1,3 +1,8 @@
+// This program was my testbed for getting the BMC electronics to work under Linux.
+// It is not useful for anything else and does not use my approved library.
+// I am going to commit this and then delete it from my git repository to avoid
+// confusing anybody.  JLCodona 20110317.
+
 #include <stdio.h>
 #include <usb.h>
 

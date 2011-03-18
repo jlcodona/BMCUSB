@@ -1,3 +1,6 @@
+// This is a simple test program to exercise the libbmcusb API.
+// JLCodona 20110301
+
 #include <usb.h>
 #include <stdlib.h>
 #include <stdio.h>

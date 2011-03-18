@@ -1,3 +1,9 @@
+%  This test function uses a Zernike generator program from here...
+%  http://research.opt.indiana.edu/Library/HVO/ZernikeStringP.m
+% I got it originally from the MATLAB contributed software, but it isn't there now.
+%  There is another one though, so use that if you want.  I general I don't like Zernikes.
+%  JLCodona
+
 % SCALE = 5000;
 SCALE = 1000;
 OFFSET = 0.2;

@@ -2,9 +2,12 @@ function DM = pokeBMC(n1,n2,val)
 
 % DM = pokeBMC(n1,n2,[val]): set one actuator to a test value.
 % val is optional and defaults to 0.5
-% 
+%  This is a test function to poke an actuator.  I used it mostly to figure out the actuator mappings.
+%
+% NOTE: This function may be out of sync with any reasonable numbering for the actuators.
+%  
 % 20110226: JLCodona
-
+%
 % JLCMAP1 = ...
 % [ 79, 88, 34, 35,103, 23, 89,129,124, 44, 11, 99, ...
 %  134, 54, 55, 83, 38, 98,118,153, 93, 40, 39,  8, ...

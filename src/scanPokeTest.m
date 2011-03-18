@@ -1,3 +1,5 @@
+%  This is just a crazy test program to see if I got the actuator ordering correct.
+
 DMMASK = ones(12);
 DMMASK(1,1) = 0;
 DMMASK(1,12) = 0;
