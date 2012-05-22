@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     int nloop;
     long updates = 0;
 
-    u_int16_t data[USB_NUM_ACTUATORS_MULTI];
+    //u_int16_t data[USB_NUM_ACTUATORS_MULTI];
 
     for (nloop=0;nloop<1;nloop++) {
         for (nlevel=0;nlevel<0x8000;nlevel+=5) {
