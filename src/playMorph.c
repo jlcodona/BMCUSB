@@ -29,11 +29,10 @@ int main(int argc, char **argv)
     bmcusb_setHV(DM,1);
 
     u_int16_t sActData[NUM_ACTUATORS] = {0x0000};    // unmapped actuator data for sending to the DM
-    int counter, val, n, nloop, nloop2;
+    int val, n, nloop, nloop2;
     
     int MAXVAL = 0x8000;
     for (nloop=0; nloop<4; nloop++) {
-        counter = 0;
         for (nloop2=0; nloop2<4; nloop2++) {
             for (val=0; val<MAXVAL; val+=1) {
                 bmcusb_constantDM(DM,val);
