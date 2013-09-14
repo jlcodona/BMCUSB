@@ -1,0 +1,4 @@
+sudo apt-get install cmake 
+sudo apt-get install libusb-dev 
+cmake -G "Unix Makefiles"
+make
