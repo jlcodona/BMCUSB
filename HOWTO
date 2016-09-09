@@ -25,4 +25,16 @@ Use the following command to compile the mex file... (from inside the src direct
 $ mex -g -ldl -L. -lbmcusb -lusb CFLAGS="\$CFLAGS -std=c99"  mexBMC.c
 
 You will have to make sure your paths resolve properly from inside MATLAB so it will find the bmcusb library.
+You can do this several ways.  
 
+Add the path to the overall shared library paths:
+
+$ sudo ldconfig <path to library>
+
+Set a personal path in your environment before you run MATLABL
+
+$ export LD_LIBRARY_PATH=<path to library>
+
+etc.
+
+There is probably a way to set the MATLAB environment too.  
