@@ -1,4 +1,28 @@
-sudo apt-get install cmake 
-sudo apt-get install libusb-dev 
-cmake -G "Unix Makefiles"
-make
+Install things you will need:
+
+$ sudo apt-get install cmake 
+$ sudo apt-get install libusb-dev 
+
+Generate the makefile:
+$ cmake -G "Unix Makefiles"
+
+Build the C code and shared library:
+$ make
+
+Build the MATLAB mex file...
+
+Make sure you have installed the required version of gcc (gcc-4.7 at this time).
+
+$ sudo apt install gcc-4.7
+
+Configure mex to use the correct compiler...
+
+$ mex -setup:${HOME}/.matlab/R2016a/mex_C_glnxa64.xml C
+
+The comments will cause trouble if you don't turn off ansi.  
+Use the following command to compile the mex file... (from inside the src directory)
+
+$ mex -g -ldl -L. -lbmcusb -lusb CFLAGS="\$CFLAGS -std=c99"  mexBMC.c
+
+You will have to make sure your paths resolve properly from inside MATLAB so it will find the bmcusb library.
+
